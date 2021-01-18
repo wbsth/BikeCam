@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">BikeCam</string>
+    <string name="bt_status_text">Bluetooth</string>
+    <string name="bt_switch_off_button">Turn off BT</string>
+    <string name="bt_switch_on_button">Turn on BT</string>
+    <string name="bt_devices_found">No devices found… yet!</string>
+    <string name="bt_status_off">Disabled</string>
+    <string name="bt_status_turning_on">Turning ON…</string>
+    <string name="bt_status_turning_off">Turning OFF…</string>
+    <string name="bt_status_on">Enabled</string>
+    <string name="device_list_name">Devices:</string>
+    <string name="bt_title">Bluetooth Status</string>
+    <string name="bt_refresh_button">Refresh</string>
+    <string name="bt_connect_button">Connect</string>
+    <string name="bt_refresh_in_progress">Refresh in progress…</string>
+</resources>
