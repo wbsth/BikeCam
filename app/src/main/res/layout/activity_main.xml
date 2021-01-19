@@ -9,6 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
         android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -137,15 +138,21 @@
                 android:layout_marginEnd="8dp"
                 android:text="@string/deviceInfoHeader"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btDevicesCard" />
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/deviceInfoCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/deviceInfoHeader">
@@ -155,16 +162,16 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/DeviceInfoName"
+                        android:id="@+id/deviceInfoName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="@string/DeviceInfoName"
-                        app:layout_constraintBaseline_toBaselineOf="@+id/DeviceInfoConnectButton"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/deviceInfoConnectButton"
                         app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
-                        android:id="@+id/DeviceInfoStatus"
+                        android:id="@+id/deviceInfoStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -173,16 +180,16 @@
                         app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
-                        android:id="@+id/DeviceInfoNameText"
+                        android:id="@+id/deviceInfoNameText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="@string/DeviceInfoNameText"
-                        app:layout_constraintBaseline_toBaselineOf="@+id/DeviceInfoName"
-                        app:layout_constraintStart_toEndOf="@+id/DeviceInfoName" />
+                        app:layout_constraintBaseline_toBaselineOf="@+id/deviceInfoName"
+                        app:layout_constraintStart_toEndOf="@+id/deviceInfoName" />
 
                     <Button
-                        android:id="@+id/DeviceInfoConnectButton"
+                        android:id="@+id/deviceInfoConnectButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -198,10 +205,11 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
+                        android:enabled="false"
                         android:text="@string/deviceInfoDetectionButton"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/DeviceInfoConnectButton" />
+                        app:layout_constraintTop_toBottomOf="@+id/deviceInfoConnectButton" />
 
                     <TextView
                         android:id="@+id/deviceInfoStatusText"
@@ -209,8 +217,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:text="@string/deviceInfoStatusText"
-                        app:layout_constraintBaseline_toBaselineOf="@+id/DeviceInfoStatus"
-                        app:layout_constraintStart_toEndOf="@+id/DeviceInfoStatus" />
+                        app:layout_constraintBaseline_toBaselineOf="@+id/deviceInfoStatus"
+                        app:layout_constraintStart_toEndOf="@+id/deviceInfoStatus" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 

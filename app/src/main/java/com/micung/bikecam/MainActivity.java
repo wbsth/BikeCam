@@ -6,11 +6,12 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +35,15 @@ public class MainActivity extends AppCompatActivity {
     TextView btStatusText;
     Button btStatusButton;
     Button btRefreshButton;
+
+    TextView deviceName;
+    TextView deviceStatus;
+    View deviceCard;
+    View deviceCardTitle;
+    Button deviceCardConnectButton;
+    Button deviceCardDetectionButton;
+
+    BluetoothDevice btdevice;
     ArrayList<BluetoothDevice> deviceList;
 
     RecyclerView deviceListRecycler;
@@ -52,8 +62,16 @@ public class MainActivity extends AppCompatActivity {
         btStatusButton = findViewById(R.id.bt_switch_button);
         btRefreshButton = findViewById(R.id.bt_refresh_button);
 
-        btStatusButton.setOnClickListener(btStateButtonListener);
+        deviceName = findViewById(R.id.deviceInfoNameText);
+        deviceStatus = findViewById(R.id.deviceInfoStatusText);
+        deviceCard = findViewById(R.id.deviceInfoCard);
+        deviceCardTitle = findViewById(R.id.deviceInfoHeader);
+        deviceCardConnectButton = findViewById(R.id.deviceInfoConnectButton);
+        deviceCardDetectionButton = findViewById(R.id.deviceInfoDetectionButton);
+
+        btStatusButton.setOnClickListener(btStatusButtonListener);
         btRefreshButton.setOnClickListener(btRefreshButtonListener);
+        deviceCardConnectButton.setOnClickListener(deviceCardConnectButtonListener);
 
         deviceList = new ArrayList<BluetoothDevice>();
 
@@ -91,6 +109,42 @@ public class MainActivity extends AppCompatActivity {
         btStatusButton.setEnabled(true);
     }
 
+    private void fillDeviceInfo(){
+        deviceCard.setVisibility(View.VISIBLE);
+        deviceCardTitle.setVisibility(View.VISIBLE);
+
+        deviceName.setText(btdevice.getName());
+        deviceCardConnectButton.setText("Connect");
+        Toast.makeText(getApplicationContext(), "New device was choosen", Toast.LENGTH_SHORT).show();
+
+        refreshDeviceInfo();
+    }
+
+    private void refreshDeviceInfo(){
+        int bondState = btdevice.getBondState();
+        String deviceStatusText = "";
+
+        Log.d(TAG, String.valueOf(bondState));
+
+        switch (bondState){
+            case 10:
+                deviceStatusText = "Not paired";
+                deviceCardConnectButton.setText("Connect");
+                deviceCardDetectionButton.setEnabled(false);
+                break;
+            case 11:
+                deviceStatusText = "Paired";
+                deviceCardConnectButton.setText("Disconnect");
+                deviceCardDetectionButton.setEnabled(true);
+                break;
+            case 12:
+                deviceStatusText = "Pairing in progress...";
+                deviceCardConnectButton.setText("In progress...");
+                break;
+        }
+        deviceStatus.setText(deviceStatusText);
+    }
+
     public class deviceAdapter extends RecyclerView.Adapter<deviceAdapter.ViewHolder>{
 
         private List<BluetoothDevice> btDevices;
@@ -108,6 +162,8 @@ public class MainActivity extends AppCompatActivity {
                 addressTextView = view.findViewById(R.id.bt_device_address);
                 connectButton = view.findViewById(R.id.bt_device_connect_button);
                 connectButton.setOnClickListener((v -> {
+                    btdevice = device;
+                    fillDeviceInfo();
                     Log.d("TESTY", device.getName());
                 }));
             }
@@ -153,7 +209,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public View.OnClickListener btStateButtonListener = new View.OnClickListener() {
+    public View.OnClickListener deviceCardConnectButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            bluetooth.pair(btdevice);
+            deviceCardConnectButton.setText("Pairing...");
+            deviceCardConnectButton.setEnabled(false);
+        }
+    };
+
+    public View.OnClickListener btStatusButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if(bluetooth.isEnabled())
@@ -233,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onDevicePaired(BluetoothDevice device) {
+            refreshDeviceInfo();
             Log.i(TAG, "device paired");
         }
 
