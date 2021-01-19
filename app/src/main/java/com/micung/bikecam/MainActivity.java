@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.graphics.Color;
@@ -96,16 +97,22 @@ public class MainActivity extends AppCompatActivity {
         private RecyclerView btRecyclerView;
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            private final TextView nameTextView;
-            private final TextView addressTextView;
-            private final Button connectButton;
+            private TextView nameTextView;
+            private TextView addressTextView;
+            private Button connectButton;
+            private BluetoothDevice device;
 
             public ViewHolder(View view) {
                 super(view);
-                nameTextView = (TextView) view.findViewById(R.id.bt_device_name);
-                addressTextView = (TextView) view.findViewById(R.id.bt_device_address);
-                connectButton = (Button) view.findViewById(R.id.bt_device_connect_button);
+                nameTextView = view.findViewById(R.id.bt_device_name);
+                addressTextView = view.findViewById(R.id.bt_device_address);
+                connectButton = view.findViewById(R.id.bt_device_connect_button);
+                connectButton.setOnClickListener((v -> {
+                    Log.d("TESTY", device.getName());
+                }));
             }
+
+
         }
 
         public deviceAdapter(List<BluetoothDevice> btDev, RecyclerView tempRecyclerView) {
@@ -131,8 +138,12 @@ public class MainActivity extends AppCompatActivity {
 
             TextView nameTextView = holder.nameTextView;
             TextView addressTextView = holder.addressTextView;
+            holder.device = btDevice;
 
-            nameTextView.setText(btDevice.getName());
+            if(btDevice.getName()!=null)
+                nameTextView.setText(btDevice.getName());
+            else
+                nameTextView.setText("unknown");
             addressTextView.setText(btDevice.getAddress());
         }
 
@@ -216,7 +227,8 @@ public class MainActivity extends AppCompatActivity {
             deviceList.add(device);
             adapter.notifyItemInserted(deviceList.size()-1);
             Log.i(TAG, "Device found");
-            Log.i(TAG, device.getName());
+            if(device.getName() != null)
+                Log.i(TAG, device.getName());
         }
 
         @Override

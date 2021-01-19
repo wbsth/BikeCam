@@ -13,4 +13,11 @@
     <string name="bt_refresh_button">Refresh</string>
     <string name="bt_connect_button">Connect</string>
     <string name="bt_refresh_in_progress">Refresh in progress…</string>
+    <string name="deviceInfoHeader">Device Info</string>
+    <string name="DeviceInfoName">Name:</string>
+    <string name="DeviceInfoStatus">Status:</string>
+    <string name="DeviceInfoNameText">holder</string>
+    <string name="DeviceInfoConnectButton">Connect</string>
+    <string name="deviceInfoDetectionButton">Detection on</string>
+    <string name="deviceInfoStatusText">holder</string>
 </resources>
