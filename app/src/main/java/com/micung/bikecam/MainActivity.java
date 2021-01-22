@@ -143,6 +143,12 @@ public class MainActivity extends AppCompatActivity {
         deviceStatus.setText(deviceStatusText);
     }
 
+    private void clearDeviceInfo(){
+        deviceCard.setVisibility(View.INVISIBLE);
+        deviceCardTitle.setVisibility(View.INVISIBLE);
+        btdevice = null;
+    }
+
     public class deviceAdapter extends RecyclerView.Adapter<deviceAdapter.ViewHolder>{
 
         private List<BluetoothDevice> btDevices;
@@ -231,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
             try{
                 bluetooth.startScanning();
                 deviceList.clear();
+                clearDeviceInfo();
                 adapter.notifyDataSetChanged();
             }
             catch (Exception e){
