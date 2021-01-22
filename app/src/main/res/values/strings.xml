@@ -20,4 +20,5 @@
     <string name="DeviceInfoConnectButton">Connect</string>
     <string name="deviceInfoDetectionButton">Detection on</string>
     <string name="deviceInfoStatusText">holder</string>
+    <string name="deviceListChooseButton">Choose</string>
 </resources>

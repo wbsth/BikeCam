@@ -10,8 +10,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -153,22 +151,20 @@ public class MainActivity extends AppCompatActivity {
         public class ViewHolder extends RecyclerView.ViewHolder {
             private TextView nameTextView;
             private TextView addressTextView;
-            private Button connectButton;
+            private Button chooseButton;
             private BluetoothDevice device;
 
             public ViewHolder(View view) {
                 super(view);
                 nameTextView = view.findViewById(R.id.bt_device_name);
                 addressTextView = view.findViewById(R.id.bt_device_address);
-                connectButton = view.findViewById(R.id.bt_device_connect_button);
-                connectButton.setOnClickListener((v -> {
+                chooseButton = view.findViewById(R.id.bt_device_choose_button);
+                chooseButton.setOnClickListener((v -> {
                     btdevice = device;
                     fillDeviceInfo();
                     Log.d("TESTY", device.getName());
                 }));
             }
-
-
         }
 
         public deviceAdapter(List<BluetoothDevice> btDev, RecyclerView tempRecyclerView) {

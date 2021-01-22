@@ -34,18 +34,18 @@
         android:text="sample text"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/bt_device_connect_button"
+        app:layout_constraintEnd_toStartOf="@+id/bt_device_choose_button"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/bt_device_connect_button"
+        android:id="@+id/bt_device_choose_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:text="Connect"
+        android:text="@string/deviceListChooseButton"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
