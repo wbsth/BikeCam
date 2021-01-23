@@ -74,8 +74,9 @@ public class MainActivity extends AppCompatActivity {
         btStatusButton.setOnClickListener(btStatusButtonListener);
         btRefreshButton.setOnClickListener(btRefreshButtonListener);
         deviceCardPairButton.setOnClickListener(deviceCardPairButtonListener);
+        deviceCardConnectButton.setOnClickListener(deviceCardConnectButtonListener);
 
-        deviceList = new ArrayList<BluetoothDevice>();
+        deviceList = new ArrayList<>();
 
         deviceListRecycler = findViewById(R.id.deviceRecyclerView);
         deviceListRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -123,9 +124,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void refreshDeviceInfo(){
         int bondState = btdevice.getBondState();
+        boolean isConnected = bluetooth.isConnected();
         String deviceStatusText = "";
-
-        Log.d(TAG, String.valueOf(bondState));
+        if(isConnected)
+            bluetooth.disconnect();
 
         switch (bondState){
             case 10:
@@ -136,17 +138,17 @@ public class MainActivity extends AppCompatActivity {
                 deviceCardConnectButton.setEnabled(false);
                 break;
             case 11:
-                deviceStatusText = "Paired";
+                deviceStatusText = "Pairing in progress...";
                 deviceCardPairButton.setText(R.string.deviceCardPairButtonTextUnpair);
                 deviceCardPairButton.setEnabled(true);
                 deviceCardConnectButton.setText(R.string.deviceCardConnectButtonConnect);
                 deviceCardConnectButton.setEnabled(true);
                 break;
             case 12:
-                deviceStatusText = "Connected";
+                deviceStatusText = "Paired";
                 deviceCardPairButton.setText(R.string.deviceCardPairButtonTextUnpair);
                 deviceCardPairButton.setEnabled(true);
-                deviceCardConnectButton.setText(R.string.deviceCardConnectButtonTextDisconnect);
+                deviceCardConnectButton.setText(R.string.deviceCardConnectButtonConnect);
                 deviceCardConnectButton.setEnabled(true);
                 break;
         }
@@ -159,6 +161,61 @@ public class MainActivity extends AppCompatActivity {
         deviceCardTitle.setVisibility(View.INVISIBLE);
         btdevice = null;
     }
+
+    public View.OnClickListener deviceCardPairButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int state = btdevice.getBondState();
+            if(state == 10){
+                // device is not paired
+                bluetooth.pair(btdevice);
+            }
+            else{
+                // device is paired
+                bluetooth.unpair(btdevice);
+            }
+        }
+    };
+
+    public View.OnClickListener deviceCardConnectButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(bluetooth.isConnected()){
+                bluetooth.disconnect();
+            }
+            else{
+                bluetooth.connectToDevice(btdevice);
+            }
+        }
+    };
+
+
+
+    public View.OnClickListener btStatusButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(bluetooth.isEnabled())
+                bluetooth.disable();
+            else
+                bluetooth.enable();
+        }
+    };
+
+    public View.OnClickListener btRefreshButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Log.i(TAG, "startScanning pressed");
+            try{
+                bluetooth.startScanning();
+                deviceList.clear();
+                clearDeviceInfo();
+                adapter.notifyDataSetChanged();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    };
 
     public class deviceAdapter extends RecyclerView.Adapter<deviceAdapter.ViewHolder>{
 
@@ -221,47 +278,6 @@ public class MainActivity extends AppCompatActivity {
             return btDevices.size();
         }
     }
-
-    public View.OnClickListener deviceCardPairButtonListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int state = btdevice.getBondState();
-            if(state == 10){
-                // device is not paired
-                bluetooth.pair(btdevice);
-            }
-            else{
-                // device is paired
-                bluetooth.unpair(btdevice);
-            }
-        }
-    };
-
-    public View.OnClickListener btStatusButtonListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(bluetooth.isEnabled())
-                bluetooth.disable();
-            else
-                bluetooth.enable();
-        }
-    };
-
-    public View.OnClickListener btRefreshButtonListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Log.i(TAG, "startScanning pressed");
-            try{
-                bluetooth.startScanning();
-                deviceList.clear();
-                clearDeviceInfo();
-                adapter.notifyDataSetChanged();
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-    };
 
     private BluetoothCallback bluetoothCallback = new BluetoothCallback() {
         @Override public void onBluetoothTurningOn() {
