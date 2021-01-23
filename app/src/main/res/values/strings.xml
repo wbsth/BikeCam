@@ -21,4 +21,8 @@
     <string name="deviceInfoDetectionButton">Detection on</string>
     <string name="deviceInfoStatusText">holder</string>
     <string name="deviceListChooseButton">Choose</string>
+    <string name="deviceCardPairButtonTextPair">Pair</string>
+    <string name="deviceCardConnectButtonConnect">Connect</string>
+    <string name="deviceCardPairButtonTextUnpair">Unpair</string>
+    <string name="deviceCardConnectButtonTextDisconnect">Disconnect</string>
 </resources>

@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
         deviceCardTitle.setVisibility(View.VISIBLE);
 
         deviceName.setText(btdevice.getName());
-        deviceCardConnectButton.setText("Connect");
         Toast.makeText(getApplicationContext(), "New device was choosen", Toast.LENGTH_SHORT).show();
 
         refreshDeviceInfo();
@@ -131,22 +130,23 @@ public class MainActivity extends AppCompatActivity {
         switch (bondState){
             case 10:
                 deviceStatusText = "Not paired";
-                deviceCardPairButton.setText("Pair");
+                deviceCardPairButton.setText(R.string.deviceCardPairButtonTextPair);
                 deviceCardPairButton.setEnabled(true);
-                deviceCardConnectButton.setText("Connect");
+                deviceCardConnectButton.setText(R.string.deviceCardConnectButtonConnect);
                 deviceCardConnectButton.setEnabled(false);
                 break;
             case 11:
                 deviceStatusText = "Paired";
-                deviceCardPairButton.setText("Unpair");
+                deviceCardPairButton.setText(R.string.deviceCardPairButtonTextUnpair);
                 deviceCardPairButton.setEnabled(true);
-                deviceCardConnectButton.setText("Connect");
+                deviceCardConnectButton.setText(R.string.deviceCardConnectButtonConnect);
                 deviceCardConnectButton.setEnabled(true);
+                break;
             case 12:
                 deviceStatusText = "Connected";
-                deviceCardPairButton.setText("Unpair");
+                deviceCardPairButton.setText(R.string.deviceCardPairButtonTextUnpair);
                 deviceCardPairButton.setEnabled(true);
-                deviceCardConnectButton.setText("Disconnect");
+                deviceCardConnectButton.setText(R.string.deviceCardConnectButtonTextDisconnect);
                 deviceCardConnectButton.setEnabled(true);
                 break;
         }
