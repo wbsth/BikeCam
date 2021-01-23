@@ -23,6 +23,7 @@ import java.util.List;
 
 import me.aflak.bluetooth.Bluetooth;
 import me.aflak.bluetooth.interfaces.BluetoothCallback;
+import me.aflak.bluetooth.interfaces.DeviceCallback;
 import me.aflak.bluetooth.interfaces.DiscoveryCallback;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     View deviceCardTitle;
     Button deviceCardConnectButton;
     Button deviceCardDetectionButton;
+    Button deviceCardPairButton;
 
     BluetoothDevice btdevice;
     ArrayList<BluetoothDevice> deviceList;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         bluetooth = new Bluetooth(this);
         bluetooth.setBluetoothCallback(bluetoothCallback);
         bluetooth.setDiscoveryCallback(discoveryCallback);
+        bluetooth.setDeviceCallback(deviceCallback);
 
         btStatusText = findViewById(R.id.bt_status_text);
         btStatusButton = findViewById(R.id.bt_switch_button);
@@ -66,10 +69,11 @@ public class MainActivity extends AppCompatActivity {
         deviceCardTitle = findViewById(R.id.deviceInfoHeader);
         deviceCardConnectButton = findViewById(R.id.deviceInfoConnectButton);
         deviceCardDetectionButton = findViewById(R.id.deviceInfoDetectionButton);
+        deviceCardPairButton = findViewById(R.id.deviceInfoPairButton);
 
         btStatusButton.setOnClickListener(btStatusButtonListener);
         btRefreshButton.setOnClickListener(btRefreshButtonListener);
-        deviceCardConnectButton.setOnClickListener(deviceCardConnectButtonListener);
+        deviceCardPairButton.setOnClickListener(deviceCardPairButtonListener);
 
         deviceList = new ArrayList<BluetoothDevice>();
 
@@ -127,20 +131,27 @@ public class MainActivity extends AppCompatActivity {
         switch (bondState){
             case 10:
                 deviceStatusText = "Not paired";
+                deviceCardPairButton.setText("Pair");
+                deviceCardPairButton.setEnabled(true);
                 deviceCardConnectButton.setText("Connect");
-                deviceCardDetectionButton.setEnabled(false);
+                deviceCardConnectButton.setEnabled(false);
                 break;
             case 11:
                 deviceStatusText = "Paired";
-                deviceCardConnectButton.setText("Disconnect");
-                deviceCardDetectionButton.setEnabled(true);
-                break;
+                deviceCardPairButton.setText("Unpair");
+                deviceCardPairButton.setEnabled(true);
+                deviceCardConnectButton.setText("Connect");
+                deviceCardConnectButton.setEnabled(true);
             case 12:
-                deviceStatusText = "Pairing in progress...";
-                deviceCardConnectButton.setText("In progress...");
+                deviceStatusText = "Connected";
+                deviceCardPairButton.setText("Unpair");
+                deviceCardPairButton.setEnabled(true);
+                deviceCardConnectButton.setText("Disconnect");
+                deviceCardConnectButton.setEnabled(true);
                 break;
         }
         deviceStatus.setText(deviceStatusText);
+        Log.d("TESTY", deviceStatusText);
     }
 
     private void clearDeviceInfo(){
@@ -211,12 +222,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public View.OnClickListener deviceCardConnectButtonListener = new View.OnClickListener() {
+    public View.OnClickListener deviceCardPairButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            bluetooth.pair(btdevice);
-            deviceCardConnectButton.setText("Pairing...");
-            deviceCardConnectButton.setEnabled(false);
+            int state = btdevice.getBondState();
+            if(state == 10){
+                // device is not paired
+                bluetooth.pair(btdevice);
+            }
+            else{
+                // device is paired
+                bluetooth.unpair(btdevice);
+            }
         }
     };
 
@@ -307,12 +324,40 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onDeviceUnpaired(BluetoothDevice device) {
+            refreshDeviceInfo();
             Log.i(TAG, "device unpaired");
         }
 
         @Override
         public void onError(int errorCode) {
             Log.e(TAG, String.format("%d", errorCode));
+        }
+    };
+
+    private DeviceCallback deviceCallback = new DeviceCallback() {
+        @Override
+        public void onDeviceConnected(BluetoothDevice device) {
+            Log.d("TESTY", "DEVICE CONNECTED");
+        }
+
+        @Override
+        public void onDeviceDisconnected(BluetoothDevice device, String message) {
+
+        }
+
+        @Override
+        public void onMessage(byte[] message) {
+
+        }
+
+        @Override
+        public void onError(int errorCode) {
+
+        }
+
+        @Override
+        public void onConnectError(BluetoothDevice device, String message) {
+
         }
     };
 
