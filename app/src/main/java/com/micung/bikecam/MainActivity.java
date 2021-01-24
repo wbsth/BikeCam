@@ -6,29 +6,55 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import me.aflak.bluetooth.Bluetooth;
 import me.aflak.bluetooth.interfaces.BluetoothCallback;
 import me.aflak.bluetooth.interfaces.DeviceCallback;
 import me.aflak.bluetooth.interfaces.DiscoveryCallback;
 
-public class MainActivity extends AppCompatActivity {
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureRequest;
+
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
+
+import me.aflak.ezcam.EZCam;
+import me.aflak.ezcam.EZCamCallback;
+
+public class MainActivity extends AppCompatActivity implements EZCamCallback{
 
     private static final String TAG = "BIKECAM";
+
+    private EZCam cam;
+    private SimpleDateFormat dateFormat;
 
     Bluetooth bluetooth;
     TextView btStatusText;
@@ -42,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
     Button deviceCardConnectButton;
     Button deviceCardDetectionButton;
     Button deviceCardPairButton;
+
+    TextureView textureView;
 
     BluetoothDevice btdevice;
     ArrayList<BluetoothDevice> deviceList;
@@ -71,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
         deviceCardDetectionButton = findViewById(R.id.deviceInfoDetectionButton);
         deviceCardPairButton = findViewById(R.id.deviceInfoPairButton);
 
+        textureView = findViewById(R.id.textureView);
+
         btStatusButton.setOnClickListener(btStatusButtonListener);
         btRefreshButton.setOnClickListener(btRefreshButtonListener);
         deviceCardPairButton.setOnClickListener(deviceCardPairButtonListener);
@@ -87,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
 
         interfaceInit();
 
+        cameraInit();
+
     }
 
     @Override
@@ -94,6 +126,67 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         bluetooth.onStart();
         interfaceInit();
+    }
+
+    private void cameraInit(){
+        cam = new EZCam(this);
+        cam.setCameraCallback(this);
+        String id = cam.getCamerasList().get(CameraCharacteristics.LENS_FACING_BACK);
+        cam.selectCamera(id);
+        Dexter.withActivity(MainActivity.this).withPermission(Manifest.permission.CAMERA).withListener(new PermissionListener() {
+            @Override
+            public void onPermissionGranted(PermissionGrantedResponse response) {
+                cam.open(CameraDevice.TEMPLATE_PREVIEW, textureView);
+            }
+
+            @Override
+            public void onPermissionDenied(PermissionDeniedResponse response) {
+                Log.e(TAG, "permission denied");
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                token.continuePermissionRequest();
+            }
+        }).check();
+    }
+
+    @Override
+    public void onCameraReady() {
+        cam.setCaptureSetting(CaptureRequest.COLOR_CORRECTION_ABERRATION_MODE, CameraMetadata.COLOR_CORRECTION_ABERRATION_MODE_HIGH_QUALITY);
+        //cam.startPreview();
+    }
+
+    @Override
+    public void onPicture(Image image) {
+        //cam.stopPreview();
+        try {
+            dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault());
+            String filename = "image_"+dateFormat.format(new Date())+".jpg";
+            Log.d("TESTY", String.valueOf(getExternalFilesDir(null)));
+            File file = new File(getExternalFilesDir(null), filename);
+
+            EZCam.saveImage(image, file);
+
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    @Override
+    public void onCameraDisconnected() {
+        Log.e(TAG, "Camera disconnected");
+    }
+
+    @Override
+    public void onError(String message) {
+        Log.e(TAG, message);
+    }
+
+    @Override
+    protected void onDestroy() {
+        cam.close();
+        super.onDestroy();
     }
 
     private void interfaceInit(){
