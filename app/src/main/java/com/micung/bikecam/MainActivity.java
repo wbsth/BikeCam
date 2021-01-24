@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +47,7 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+import me.aflak.bluetooth.reader.LineReader;
 import me.aflak.ezcam.EZCam;
 import me.aflak.ezcam.EZCamCallback;
 
@@ -66,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements EZCamCallback{
     View deviceCard;
     View deviceCardTitle;
     Button deviceCardConnectButton;
-    Button deviceCardDetectionButton;
     Button deviceCardPairButton;
 
     TextureView textureView;
@@ -96,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements EZCamCallback{
         deviceCard = findViewById(R.id.deviceInfoCard);
         deviceCardTitle = findViewById(R.id.deviceInfoHeader);
         deviceCardConnectButton = findViewById(R.id.deviceInfoConnectButton);
-        deviceCardDetectionButton = findViewById(R.id.deviceInfoDetectionButton);
         deviceCardPairButton = findViewById(R.id.deviceInfoPairButton);
 
         textureView = findViewById(R.id.textureView);
@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements EZCamCallback{
         adapter = new deviceAdapter(deviceList, deviceListRecycler);
         deviceListRecycler.setAdapter(adapter);
 
+
         interfaceInit();
 
         cameraInit();
@@ -125,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements EZCamCallback{
     protected void onStart(){
         super.onStart();
         bluetooth.onStart();
+        bluetooth.setReader(DelimiterReader.class);
         interfaceInit();
     }
 
@@ -154,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements EZCamCallback{
     @Override
     public void onCameraReady() {
         cam.setCaptureSetting(CaptureRequest.COLOR_CORRECTION_ABERRATION_MODE, CameraMetadata.COLOR_CORRECTION_ABERRATION_MODE_HIGH_QUALITY);
-        //cam.startPreview();
+        cam.startPreview();
     }
 
     @Override
@@ -447,21 +449,38 @@ public class MainActivity extends AppCompatActivity implements EZCamCallback{
         @Override
         public void onDeviceConnected(BluetoothDevice device) {
             Log.d("TESTY", "DEVICE CONNECTED");
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "Device connected", Toast.LENGTH_SHORT).show();
+                }
+            });
+            deviceCardConnectButton.setText(R.string.deviceCardConnectButtonTextDisconnect);
         }
 
         @Override
         public void onDeviceDisconnected(BluetoothDevice device, String message) {
-
+            Log.d("TESTY", "DEVICE DISCONNECTED");
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "Device disconnected", Toast.LENGTH_SHORT).show();
+                }
+            });
+            deviceCardConnectButton.setText(R.string.deviceCardConnectButtonConnect);
         }
 
         @Override
         public void onMessage(byte[] message) {
-
+            cam.takePicture();
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "Photo taken!", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         @Override
         public void onError(int errorCode) {
-
+            Log.d("TESTY", String.valueOf(errorCode));
         }
 
         @Override
